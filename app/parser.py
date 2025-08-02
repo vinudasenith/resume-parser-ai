@@ -37,7 +37,13 @@ def extract_phone(text):
         return None
     
 
-
+def extract_links(text):
+    github=re.search(r'(https?://github\.com/[^\s]+)', text, re.IGNORECASE)
+    linkedin=re.search(r'(https?://linkedin\.com/in/[^\s]+)', text, re.IGNORECASE)
+    return{
+        "github":github.group(0) if github else None,
+        "linkedin":linkedin.group(0) if linkedin else None
+    }
 
 
 
