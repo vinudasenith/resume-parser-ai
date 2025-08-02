@@ -19,6 +19,12 @@ def extract_text_from_pdf(pdf_bytes:bytes) -> str:
         print(e)
     return text
 
+def extract_email(text):
+    match =re.search(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', text)
+    return match.group(0) if match else None
+
+
+
 
 
 
