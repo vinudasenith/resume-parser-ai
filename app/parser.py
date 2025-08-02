@@ -24,6 +24,20 @@ def extract_email(text):
     return match.group(0) if match else None
 
 
+def extract_phone(text):
+    patterns=[
+        r'\+?\d{1,4}[\s\-\(\)]?\d{1,4}[\s\-\(\)]?\d{1,4}[\s\-\(\)]?\d{1,9}',
+        r'\(\d{3}\)\s?\d{3}[-.]?\d{4}',
+        r'\d{3}[-.]?\d{3}[-.]?\d{4}']
+    
+    for pattern in patterns:
+        match =re.search(pattern,text)
+        if match:
+            return match.group(0).strip()
+        return None
+    
+
+
 
 
 
