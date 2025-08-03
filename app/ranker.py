@@ -205,6 +205,45 @@ def calculate_bonus_points(resume_data:dict)->float:
 
     return bonus
 
+def calculate_ats_compatibility(resume_data:dict) -> Dict[str, any]:
+
+    ats_score=0
+    issues=[]
+
+    if not resume_data.get("email"):
+        issues.append("Missing email")
+    else:
+        ats_score+=20
+
+    if not resume_data.get("phone"):
+        issues.append("Missing phone number")
+    else:
+        ats_score+=15
+
+    #skills section check
+    if not resume_data.get("skills"):
+        issues.append("Missing skills section")
+    elif len(resume_data.get("skills",[]))<3:
+        issues.append("Less than 3 skills")
+    else:
+        ats_score+=25
+
+    if resume_data.get("education"):
+        ats_score += 20
+    else:
+        issues.append("No education section found")
+    
+    # Experience
+    if resume_data.get("experience") or resume_data.get("projects"):
+        ats_score += 20
+    else:
+        issues.append("No experience or projects section found")
+    
+    return {
+        "score": ats_score,
+        "grade": "Excellent" if ats_score >= 90 else "Good" if ats_score >= 70 else "Needs Improvement",
+        "issues": issues
+    }
 
 
 
