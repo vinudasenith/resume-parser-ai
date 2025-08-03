@@ -160,6 +160,25 @@ def calculate_education_score(resume_edu:str,jd_text:str)->float:
 
     return min(score,max_possible)
 
+def calculate_project_score(resume_projects:str,resume_skills:List[str],jd_text:str)->float:
+
+    if not resume_projects:
+        return 0.0
+    
+    project_score=0
+
+    #checking if project mention relevant skills
+    skill_mentions=sum(1 for skill in resume_skills if skill in resume_projects)
+    if resume_skills:
+        project_score+=(skill_mentions/len(resume_skills))*0.6
+
+    complexity_indicators = ["api", "database", "full-stack", "deployment", "testing", "architecture"]
+    complexity_score = sum(1 for indicator in complexity_indicators if indicator in resume_projects)
+    project_score += min(complexity_score / len(complexity_indicators), 0.4)
+    
+    return min(project_score, 1.0)
+
+
 
 
 
