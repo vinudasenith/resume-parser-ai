@@ -89,5 +89,45 @@ def calculate_skills_score(resume_skills:List[str],jd_text:str)->tuple:
     return skills_score, matched_skills
 
 
+def calculate_experience_score(resume_exp:str,jd_text:str)->float:
+
+    if not resume_exp:
+        return 0.0
+    
+    experience_indicators={
+        #experience in years
+        "years":0.3,
+        "year":0.25,
+
+        #experience in job roles
+        "senior": 0.4,
+        "lead": 0.4,
+        "principal": 0.5,
+        "junior": 0.2,
+        "intern": 0.15,
+        
+
+        "engineer": 0.3,
+        "developer": 0.3,
+        "programmer": 0.25,
+        "analyst": 0.2,
+        "consultant": 0.25,
+    }
+
+    score=0
+    max_possible=sum(experience_indicators.values())
+
+    for indicator, weight in experience_indicators.items():
+        if indicator in resume_exp:
+            score += weight
+
+            if indicator in jd_text:
+                score += weight * 0.5
+    
+    return min(score / max_possible, 1.0)
+
+
+
+
 
 
