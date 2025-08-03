@@ -84,7 +84,7 @@ def extract_skills(text):
 
     for skill in skill_keywords:
         #check for each
-        skill_variants=[skill.lower(),skill.lower(),replace('.',''),skill.lower().replace(' ','')]
+        skill_variants=[skill.lower(),skill.lower().replace('.',''),skill.lower().replace(' ','')]
         if any(variant in text_lower for variant in skill_variants):
             found_skills.append(skill)
 
