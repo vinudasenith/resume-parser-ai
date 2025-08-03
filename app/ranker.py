@@ -127,6 +127,40 @@ def calculate_experience_score(resume_exp:str,jd_text:str)->float:
     return min(score / max_possible, 1.0)
 
 
+def calculate_education_score(resume_edu:str,jd_text:str)->float:
+
+    if not resume_edu:
+        return 0.0
+    
+
+    education_indicators={
+
+        #levels
+        "phd": 0.5, "ph.d": 0.5, "doctorate": 0.5,
+        "master": 0.4, "msc": 0.4, "m.sc": 0.4, "mba": 0.35,
+        "bachelor": 0.3, "bsc": 0.3, "b.sc": 0.3, "degree": 0.25,
+        "diploma": 0.2, "certificate": 0.15,
+
+        "computer": 0.3, "software": 0.3, "information": 0.25,
+        "engineering": 0.3, "technology": 0.25, "science": 0.2,
+        "mathematics": 0.2, "data": 0.25
+
+    }
+
+    score=0
+    max_possible=1.0 
+
+    #add more marks for relevant experience
+    for indicator,weight in education_indicators.items():
+        if indicator in resume_edu:
+            score+=weight
+
+            if indicator in jd_text:
+                score+=weight*0.3
+
+    return min(score,max_possible)
+
+
 
 
 
