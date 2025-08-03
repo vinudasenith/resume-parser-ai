@@ -179,6 +179,35 @@ def calculate_project_score(resume_projects:str,resume_skills:List[str],jd_text:
     return min(project_score, 1.0)
 
 
+def calculate_bonus_points(resume_data:dict)->float:
+
+    bonus=0
+
+    # bonus for having git
+    if resume_data.get("links",{}).get("github"):
+        bonus+=2
+
+    #bonus for having project links
+    if resume_data.get("project_links"):
+        bonus+=2
+
+
+    #bonus for having comprehensive sections
+    sections=["education","projects","skills","experience"]
+    filled_sections=sum(1 for section in sections if resume_data.get(section))
+    if filled_sections>=3:
+        bonus+=1
+
+    #bonus for having good length
+    word_count=resume_data.get("word_count",0)
+    if 200<=word_count<=800:
+        bonus+=1
+
+    return bonus
+
+
+
+
 
 
 
