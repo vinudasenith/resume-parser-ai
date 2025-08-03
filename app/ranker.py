@@ -29,7 +29,7 @@ def score_resume(resume_data:dict,job_description:str)->dict:
     skills_score,matched_skills=calculate_skills_score(resume_skills,jd_text)
     experience_score=calculate_experience_score(resume_exp,jd_text)
     education_score=calculate_education_score(resume_edu,jd_text)
-    project_score=calculate_project_score(resume_projects,jd_text)
+    project_score=calculate_project_score(resume_projects,resume_skills,jd_text)
     contact_score=calculate_contact_score(resume_data)
 
     total_score = (
@@ -178,8 +178,22 @@ def calculate_project_score(resume_projects:str,resume_skills:List[str],jd_text:
     
     return min(project_score, 1.0)
 
+def calculate_contact_score(resume_data: dict) -> float:
 
-def calculate_bonus_points(resume_data:dict)->float:
+    contact_elements = [
+        resume_data.get("name"),
+        resume_data.get("email"),
+        resume_data.get("phone"),
+        resume_data.get("links", {}).get("linkedin"),
+        resume_data.get("links", {}).get("github")
+    ]
+    
+    present_elements = sum(1 for element in contact_elements if element)
+    return present_elements / len(contact_elements)
+
+
+
+def calculate_bonus_score(resume_data:dict)->float:
 
     bonus=0
 
@@ -244,6 +258,58 @@ def calculate_ats_compatibility(resume_data:dict) -> Dict[str, any]:
         "grade": "Excellent" if ats_score >= 90 else "Good" if ats_score >= 70 else "Needs Improvement",
         "issues": issues
     }
+
+def generate_smart_recommendations(resume_data: dict, matched_skills: List[str], skills_score: float) -> List[str]:
+
+    recommendations = []
+    
+    # Skills recommendations
+    if skills_score < 0.5:
+        recommendations.append("Add more relevant technical skills that match the job description")
+    
+    if len(matched_skills) < 3:
+        recommendations.append("Include more keywords from the job posting in your skills section")
+    
+    # Contact recommendations
+    if not resume_data.get("email"):
+        recommendations.append("Add a professional email address")
+    
+    if not resume_data.get("links", {}).get("github"):
+        recommendations.append("Include a GitHub profile to showcase your coding projects")
+    
+    if not resume_data.get("links", {}).get("linkedin"):
+        recommendations.append("Add your LinkedIn profile for professional networking")
+    
+    # Content recommendations
+    if not resume_data.get("projects"):
+        recommendations.append("Add project descriptions to demonstrate practical experience")
+    
+    if not resume_data.get("experience"):
+        recommendations.append("Include internships, part-time work, or volunteer experience")
+    
+    # Structure recommendations
+    word_count = resume_data.get("word_count", 0)
+    if word_count < 200:
+        recommendations.append("Expand your resume with more detailed descriptions")
+    elif word_count > 800:
+        recommendations.append("Consider condensing your resume for better readability")
+    
+    return recommendations[:5]  
+
+def get_score_grade(score: float) -> str:
+
+    if score >= 90:
+        return "A+ (Excellent)"
+    elif score >= 80:
+        return "A (Very Good)"
+    elif score >= 70:
+        return "B+ (Good)"
+    elif score >= 60:
+        return "B (Fair)"
+    elif score >= 50:
+        return "C+ (Below Average)"
+    else:
+        return "C (Needs Improvement)"
 
 
 
