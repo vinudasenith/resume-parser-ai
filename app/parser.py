@@ -96,17 +96,11 @@ def parse_resume(text:str) ->dict:
     
     doc = nlp(text)
 
-    #Extract name(first PERSON entity found)
-    for ent in doc.ents:
-        if ent.label_=="PERSON" and len(ent.text.split())<=3:
-            name=ent.text
-            break
-
     projects_text="\n".join(extract_section(text,"PROJECTS"))
     project_links=extract_links_from_text(projects_text)
 
     return {
-        "name": name,
+
         "email": extract_email(text),
         "phone": extract_phone(text),
         "links": extract_links(text),
