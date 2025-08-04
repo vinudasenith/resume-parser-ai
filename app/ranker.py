@@ -1,48 +1,70 @@
 import re
 from typing import Dict,List
 
-def score_resume(resume_data:dict,job_description:str)->dict:
-
-    #resume scoring with enhanced logic
+def score_resume(resume_data: dict, job_description: str) -> dict:
+    # Resume scoring with enhanced logic
     if not resume_data or resume_data.get("error"):
-        return {"error":"Cannot score resume with parsing","score":0}
-    
+        return {
+            "error": "Cannot score resume with parsing",
+            "score": 0,
+            "score_grade": "F (Invalid)",
+            "ats_compatibility": 0,
+            "ats_grade": "Poor",
+            "smart_tips": []
+        }
 
-    #adjust weights under cases
-    weights={
-        "skills":0.35,
-        "experience":0.25,
-        "education":0.20,
-        "projects":0.15,
-        "contact_completeness":0.10
+    # Adjust weights as needed
+    weights = {
+        "skills": 0.35,
+        "experience": 0.25,
+        "education": 0.20,
+        "projects": 0.15,
+        "contact_completeness": 0.10
     }
 
     jd_text = job_description.lower()
 
+    resume_skills = [skill.lower() for skill in resume_data.get("skills", [])]
+    resume_exp = " ".join(resume_data.get("experience", [])).lower()
+    resume_edu = " ".join(resume_data.get("education", [])).lower()
+    resume_projects = " ".join(resume_data.get("projects", [])).lower()
 
-    resume_skills=[skill.lower() for skill in resume_data.get("skills",[])]
-    resume_exp=" ".join(resume_data.get("experience",[])).lower()
-    resume_edu=" ".join(resume_data.get("education",[])).lower()
-    resume_projects=" ".join(resume_data.get("projects",[])).lower()
+    # Individual component scores
+    skills_score, matched_skills = calculate_skills_score(resume_skills, jd_text)
+    experience_score = calculate_experience_score(resume_exp, jd_text)
+    education_score = calculate_education_score(resume_edu, jd_text)
+    project_score = calculate_project_score(resume_projects, resume_skills, jd_text)
+    contact_score = calculate_contact_score(resume_data)
 
-
-    skills_score,matched_skills=calculate_skills_score(resume_skills,jd_text)
-    experience_score=calculate_experience_score(resume_exp,jd_text)
-    education_score=calculate_education_score(resume_edu,jd_text)
-    project_score=calculate_project_score(resume_projects,resume_skills,jd_text)
-    contact_score=calculate_contact_score(resume_data)
-
+    # Total weighted score
     total_score = (
         skills_score * weights["skills"] +
         experience_score * weights["experience"] +
         education_score * weights["education"] +
         project_score * weights["projects"] +
         contact_score * weights["contact_completeness"]
-    ) 
+    )
 
+    # Add bonus and cap at 100
+    bonus_score = calculate_bonus_score(resume_data)
+    final_score = min(total_score + bonus_score, 100)
 
-    bonus_score=calculate_bonus_score(resume_data)
-    final_score=min(total_score+bonus_score,100)
+    # ATS compatibility & suggestions
+    ats_data = calculate_ats_compatibility(resume_data)
+    smart_tips = generate_smart_recommendations(resume_data, matched_skills, skills_score)
+
+    # Grade based on score
+    score_grade = get_score_grade(final_score)
+
+    # ✅ Return final structured output
+    return {
+        "score": round(final_score),
+        "score_grade": score_grade,
+        "ats_compatibility": ats_data["score"],
+        "ats_grade": ats_data["grade"],
+        "smart_tips": smart_tips
+    }
+
 
 
 #calculating skill score with enhanced logic    
@@ -298,16 +320,16 @@ def generate_smart_recommendations(resume_data: dict, matched_skills: List[str],
 
 def get_score_grade(score: float) -> str:
 
-    if score >= 90:
+    if score >= 9:
         return "A+ (Excellent)"
-    elif score >= 80:
+    elif score >= 8:
         return "A (Very Good)"
-    elif score >= 70:
+    elif score >= 7:
         return "B+ (Good)"
-    elif score >= 60:
+    elif score >= 6:
         return "B (Fair)"
-    elif score >= 50:
-        return "C+ (Below Average)"
+    elif score >= 3:
+        return "C+ (Average)"
     else:
         return "C (Needs Improvement)"
 
