@@ -5,8 +5,9 @@ classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnl
 
 def is_resume_ai(text: str) -> bool:
 
-    candidate_labels = ["resume", "cv", "job application", "not a resume"]
-    snippet = text[:3000]  
+    candidate_labels = ["resume", "cv", "curriculum vitae", "job application","career profile", "professional profile", "not a resume"]
+
+    snippet = text[:3000] + text[-3000:]   
     result = classifier(snippet, candidate_labels)
 
     # Pick the label with highest score
@@ -15,18 +16,17 @@ def is_resume_ai(text: str) -> bool:
 
     print("AI Classification:", best_label, best_score)
 
-    return best_label in ["resume", "cv", "job application"] and best_score > 0.6
+    return best_label in ["resume", "cv", "curriculum vitae", "job application"] and best_score > 0.6
+
 
 def has_resume_keywords(text: str) -> bool:
 
-    sections = ["WORK EXPERIENCE", "ACADEMIC QUALIFICATIONS", "PROJECTS", 
-                "TECHNOLOGIES AND TOOLS", "CERTIFICATIONS"]
+    keywords = ["WORK EXPERIENCE", "EXPERIENCES", "EDUCATION", "ACADEMIC QUALIFICATIONS","ACADEMIC BACKGROUND", "PROJECTS","SKILLS", "TECHNOLOGIES AND TOOLS","ACHIEVEMENTS", "CERTIFICATIONS", "PUBLICATIONS", "AWARDS"]
     
     text_upper = text.upper()
-    for sec in sections:
-        if sec in text_upper:
-            return True
-    return False
+    hits = sum(1 for kw in keywords if kw in text_upper)
+    return hits >= 3
+
 
 def is_resume_ai_combined(text: str) -> bool:
 
