@@ -105,6 +105,7 @@ def parse_resume(text: str) -> dict:
         if content:
             education_content = content
 
+
     # Combine Technologies & Tools + Skills
     skill_tech_sections = ["TECHNOLOGIES AND TOOLS","SKILLS"]
     skill_tech_content = []
@@ -115,6 +116,7 @@ def parse_resume(text: str) -> dict:
 
 
 
+    # Return parsed data
     return {
         "email": extract_email(text),
         "phone": extract_phone(text),

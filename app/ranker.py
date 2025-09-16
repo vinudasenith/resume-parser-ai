@@ -3,6 +3,7 @@ import spacy
 
 nlp = spacy.load("en_core_web_sm")
 
+# calculate ats compatibility
 def calculate_ats_compatibility(parsed_data: dict, text: str) -> dict:
     score = 0
     total_score = 100 

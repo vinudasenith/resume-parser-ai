@@ -21,12 +21,15 @@ async def parse_resume_endpoint(file: UploadFile = File(...)):
     if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are supported.")
 
+
     # Read PDF content
     pdf_bytes = await file.read()
     text = extract_text_from_pdf(pdf_bytes)
 
+
     if not text.strip():
         return {"error": "No text found in PDF"}
+
 
     # Check if the document looks like a resume using AI + keywords
     resume_check = is_resume_ai_combined(text)
@@ -36,14 +39,17 @@ async def parse_resume_endpoint(file: UploadFile = File(...)):
             "message": "The provided document does not look like a resume."
         }
 
+
     # Parse resume
     parsed_data = parse_resume(text)
+
+
 
     # Calculate ATS compatibility
     ats_score = calculate_ats_compatibility(parsed_data,text)
 
 
-    
+    # Print parsed data
     print("Email:", parsed_data["email"])
     print("Phone:", parsed_data["phone"])
     print("Links:", parsed_data["links"])
@@ -58,6 +64,7 @@ async def parse_resume_endpoint(file: UploadFile = File(...)):
     print("Referees:", parsed_data["referees"])
     print("Word Count:", parsed_data["word_count"])
     print("Has Contact Info:", parsed_data["has_contact_info"])
+
 
     # Return response
     return {
